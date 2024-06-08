@@ -1,0 +1,234 @@
+<main class="main">
+  <ion-content [fullscreen]="true">
+    <div [ngClass]="getTemperature()" class="content_div">
+      <div class="header">
+        <h2>Ijerson's Weather APP</h2>
+      </div>
+      <div class="alignment">
+        <ion-searchbar
+          #searchBar
+          search-icon="search-outline"
+          placeholder="Search a location..."
+          (ionChange)="getWeatherInformation($event.detail.value ?? '')"
+          class="searchbar"
+        >
+        </ion-searchbar>
+        <!-- !Working on the functionality: Get User Location -->
+        <!-- <ion-button
+          (click)="getCurrentLocation()"
+          fill="solid"
+          class="location_button"
+        >
+          <ion-icon name="location-outline"></ion-icon>
+        </ion-button> -->
+        <ion-button
+          (click)="toggleTemperature()"
+          fill="solid"
+          class="temperature_button"
+        >
+          {{ isFahrenheit ? '&deg;F' : '&deg;C' }}
+        </ion-button>
+      </div>
+      <div class="main_data">
+        <div class="date">
+          <h2 class="h2_date">
+            {{ currentDate | date:'MMMM dd, yyyy h:mm a' }}
+          </h2>
+        </div>
+        <h1 class="h1_location">
+          {{weatherData.name}}, {{ weatherData.sys?.country }}
+        </h1>
+        <div class="desc_icon">
+          <img
+            [src]="'https://openweathermap.org/img/wn/' + weatherData.weather?.[0]?.icon + '@2x.png'"
+            alt="Weather Icon"
+          />
+          <h4>{{ weatherData.weather?.[0]?.description | capitalize }}</h4>
+        </div>
+        <h4 class="main_temp" [ngClass]="getTemperatureColor()">
+          {{ weatherData.main?.temp | number:'1.0-0'}}{{ isFahrenheit ?'&deg;F'
+          : '&deg;C' }}
+        </h4>
+        <h4 class="feels_like">
+          feels like: {{ weatherData.main?.feels_like | number: '1.0-0'}}{{
+          isFahrenheit ? '&deg;F' : '&deg;C' }}
+        </h4>
+        <ion-card class="two_divs">
+          <ion-card-content class="max_min_fl">
+            <h4 class="min">
+              <p class="parg">Min Temp.</p>
+              <ion-icon name="caret-down" class="down_arrow_icon"></ion-icon>
+              {{ weatherData.main?.temp_min | number: '1.0-0'}}{{ isFahrenheit ?
+              '&deg;F' : '&deg;C' }}
+            </h4>
+
+            <h4 class="max">
+              <p class="parg">Max Temp.</p>
+              <ion-icon name="caret-up" class="up_arrow_icon"></ion-icon>
+
+              {{ weatherData.main?.temp_max | number: '1.0-0'}}{{ isFahrenheit ?
+              '&deg;F' : '&deg;C' }}
+            </h4>
+            <div class="vline"></div>
+
+            <h4 class="sunrise">
+              <p class="parg">Sunrise</p>
+              <ion-icon name="sunny-outline" class="sunrise_icon"></ion-icon>
+              {{ weatherData.sys?.sunrise ?? 0 | unixtotime }}
+            </h4>
+            <h4 class="sunset">
+              <p class="parg">Sunset</p>
+              <ion-icon name="moon-outline" class="sunset_icon"></ion-icon>
+              {{ weatherData.sys?.sunset ?? 0 | unixtotime }}
+            </h4>
+          </ion-card-content>
+          <div class="hline"></div>
+          <ion-card-content class="max_min_flp2">
+            <h4 class="visibility">
+              <p class="parg">Visibility</p>
+              <fa-icon
+                *ngIf="weatherData.visibility && weatherData.visibility / 1000 <= 2"
+                [icon]="slashed_eye"
+                class="slashed_eye"
+              ></fa-icon>
+              <fa-icon
+                *ngIf="weatherData.visibility && weatherData.visibility / 1000 > 2 && weatherData.visibility && weatherData.visibility / 1000 <= 5"
+                [icon]="lowvis_eye"
+                class="lowvis_eye"
+              ></fa-icon>
+              <fa-icon
+                *ngIf="weatherData.visibility && weatherData.visibility / 1000 > 5"
+                [icon]="eye"
+                class="eye"
+              ></fa-icon>
+              {{ weatherData.visibility ?? 0 | meterstokm | number:'1.0-0' }} km
+            </h4>
+            <h4 class="speed">
+              <p class="parg">Wind</p>
+              <fa-icon [icon]="wind" class="wind"></fa-icon>
+              {{ weatherData.wind?.speed ?? 0| windspeedmeasurement |
+              number:'1.0-0'}} km/h
+            </h4>
+            <div class="vline"></div>
+
+            <h4 class="pressure">
+              <p class="parg">Pressure</p>
+              <fa-icon [icon]="therm" class="therm"></fa-icon>
+              {{ weatherData.main?.pressure }} hPa
+            </h4>
+            <h4 class="humidity">
+              <p class="parg">Humidity</p>
+              <fa-icon [icon]="droplet" class="droplet"></fa-icon>
+              {{ weatherData.main?.humidity }}%
+            </h4>
+          </ion-card-content>
+        </ion-card>
+        <div class="container_scroll"> 
+          <ion-card-content class="h-text">
+            <p style="font-weight: bold">Hourly Forecast</p>
+            <p>{{ currentDate | date:'EEEE' }}</p>
+          </ion-card-content>
+          <ion-card class="h-scrolldiv">
+            <ion-card-content
+              *ngFor="let hour of hourlyForecast"
+              class="h-card"
+            >
+              <p>{{ hour.time | date:"shortTime"}}</p>
+              <img [src]="hour.condition.icon" alt="weather icon" />
+
+              <p class="temp_hour">
+                {{ hour.temp_c | number:'1.0-0'}}{{ isFahrenheit ? '&deg;F' :
+                '&deg;C' }}
+              </p>
+              <p>{{ hour.condition.text }}</p>
+            </ion-card-content>
+          </ion-card>
+        </div>
+        <!-- !Working on this feature: Catch if No Data Available -->
+        <!-- <ng-template #noInfo>
+          <ion-card-content class="h-text">
+            <p style="font-weight: bold">Hourly Forecast</p>
+            <p>No information available</p>
+          </ion-card-content>
+        </ng-template> -->
+        <div class="container_scroll">
+          <ion-card-content class="h-text">
+            <p style="font-weight: bold">Daily Forecast</p>
+          </ion-card-content>
+          <ion-card class="v-scrolldiv">
+            <ion-card-content *ngFor="let day of dailyForecast" class="v-card">
+              <div style="width: 80px; text-align: center">
+                <div>
+                  <p style="font-size: 11px">{{ day.date | date:'EEEE'}}</p>
+                </div>
+                <div>
+                  <p>{{ day.date | date:'MMMM dd'}}</p>
+                </div>
+              </div>
+              <div>
+                <p style="text-align: center">
+                  <ion-icon
+                    name="caret-down"
+                    class="down_arrow_icon"
+                  ></ion-icon>
+                  {{ day.day.mintemp_c | number:'1.0-0'}}{{ isFahrenheit ?
+                  '&deg;F' : '&deg;C' }}
+                </p>
+                <p style="text-align: center">
+                  <ion-icon name="caret-up" class="up_arrow_icon"></ion-icon>
+                  {{ day.day.maxtemp_c | number:'1.0-0'}}{{ isFahrenheit ?
+                  '&deg;F' : '&deg;C' }}
+                </p>
+              </div>
+              <div>
+                <img
+                  [src]="day.day.condition.icon"
+                  alt="Weather icon"
+                  class="image_icon_daily"
+                />
+              </div>
+              <div
+                style="
+                  width: 60px;
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                "
+              >
+                <p style="font-size: 11px; text-align: center; width: 90%">
+                  {{ day.day.condition.text }}
+                </p>
+              </div>
+            </ion-card-content>
+          </ion-card>
+        </div>
+      </div>
+    </div>
+  </ion-content>
+</main>
+
+<!-- 
+TODO: features
+
+*app name 
+*conversion of temperature measurement
+*location
+*clouds forecast
+*wind speed forecast
+*visibility forecast
+*sunrise/sunset forecast
+*humidity percentage forecast
+*pressure forecast
+*temperature in degree Celsius or Fahrenheit
+*maximum and minimum temperature
+*hourly weather forecast (day, date, time, icon, temperature) 
+*daily weather forecast (maximum & minimum temperature)
+
+? OTHER Features
+!location
+!saving locations
+
+? BUGS
+!timezone doesn't change (sunrise/sunset time changes based on my timezone)
+
+-->
