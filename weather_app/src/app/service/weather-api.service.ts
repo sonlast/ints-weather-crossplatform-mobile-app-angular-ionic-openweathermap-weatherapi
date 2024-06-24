@@ -127,13 +127,15 @@ export interface WeatherDataResponse {
 })
 export class WeatherApiService {
   //! USING OPENWEATHER API
-  private apiKey = 'bbe617fe90ab25d43ba91d620c680162';
+  private apiKey = 'f988c7179ee0ba8b56391d925eec8bf0';
   private units = 'metric';
-  private baseUrl = 'https://api.openweathermap.org/data/2.5/';
+  //! ADDED CORS CONFIGURATION
+  private baseUrl = 'https://cors-anywhere.herokuapp.com/http://api.openweathermap.org/data/2.5/';
 
   //! USING WEATHERAPI
-  private apiKeyHD = '886fc3c45d104f11bb011027242605';
-  private baseUrlHD = 'http://api.weatherapi.com/v1';
+  private apiKeyHD = '8a1309c0f4904d569e001616242406';
+  //! ADDED CORS CONFIGURATION
+  private baseUrlHD = 'http://cors-anywhere.herokuapp.com/http://api.weatherapi.com/v1';
 
   public weatherData: WeatherData;
   public weatherDataHD: WeatherDataHD;
