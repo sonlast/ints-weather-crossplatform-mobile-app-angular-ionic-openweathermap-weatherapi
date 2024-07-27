@@ -132,7 +132,8 @@ export class WeatherApiService {
   private baseUrl = 'https://api.openweathermap.org/data/2.5/';
 
   //! USING WEATHERAPI
-  private apiKeyHD = '886fc3c45d104f11bb011027242605';
+  // private apiKeyHD = '886fc3c45d104f11bb011027242605';
+  private apiKeyHD = '8a1309c0f4904d569e001616242406';
   private baseUrlHD = 'http://api.weatherapi.com/v1';
 
   public weatherData: WeatherData;
