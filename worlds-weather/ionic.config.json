@@ -1,0 +1,7 @@
+{
+  "name": "worlds-weather",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}
